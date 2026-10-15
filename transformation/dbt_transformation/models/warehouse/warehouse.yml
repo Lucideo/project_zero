@@ -1,0 +1,26 @@
+models:
+  - name: dim_boundary
+    columns:
+      - name: id
+        description: "pk"
+        data_tests: [unique, not_null]
+  - name: dim_location
+    columns:
+      - name: country_iso3
+        description: "pk"
+        data_tests: [unique, not_null]
+  - name: dim_magnitude
+    columns:
+      - name: magtype
+        description: "pk"
+        data_tests: [unique, not_null]
+  - name: dim_plate
+    columns:
+      - name: id
+        description: "pk"
+        data_tests: [unique, not_null]
+  - name: fact_earthquakes
+    columns:
+      - name: id
+        description: "pk"
+        data_tests: [unique, not_null]

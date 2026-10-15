@@ -1,0 +1,19 @@
+project_zero_dbt_transformation:
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DESTINATION_PATH') }}/dev.duckdb"
+      threads: 1
+      extensions:
+        - spatial
+        - httpfs
+
+    prod:
+      type: duckdb
+      path: "{{ env_var('DESTINATION_PATH') }}/warehouse.duckdb"
+      threads: 4
+      extensions:
+        - spatial
+        - httpfs
+
+  target: "{{ env_var('TARGET_ENV', 'dev') }}"

@@ -1,0 +1,10 @@
+.venv
+.git
+.gitignore
+README.MD
+__pycache__/
+raw_data
+processed_data
+logs
+dbt_transformation/target
+dbt_transformation/logs

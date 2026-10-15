@@ -1,0 +1,20 @@
+sources:
+  - name: earthquakes
+    meta:
+      source_name: "usgs_earthquakes"
+      external_location: "{{ env_var('SOURCE_DATA_DIR') }}/{source_name}/{name}/*.parquet"
+    tables:
+      - name: earthquakes
+      - name: earthquakes__geometry__coordinates
+  - name: countries
+    meta:
+      external_location: "{{ env_var('STATIC_DATA_PATH') }}/{name}/{name}.json"
+    tables:
+      - name: natural_earth_countries
+  - name: tectonic_plates
+    meta:
+      source_name: "tectonic_plates"
+      external_location: "st_read('{{ env_var('STATIC_DATA_PATH') }}/{source_name}/{name}.json')"
+    tables:
+      - name: boundaries
+      - name: plates

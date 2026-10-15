@@ -1,0 +1,16 @@
+magtype,name,description,typical_magnitude_range,typical_distance_range
+mww,W-phase moment magnitude,"Moment magnitude from inversion of the long-period W-phase (arrives between P and S waves); the USGS standard for larger global events",~5.0 and larger,1–90 degrees
+mwc,Centroid moment magnitude,"Moment magnitude from a centroid moment tensor inversion of long-period surface waves",~5.5 and larger,30–180 degrees
+mwb,Body-wave moment magnitude,"Moment magnitude from inversion of long-period body waves (P and SH)",~5.5–7.0,30–90 degrees
+mwr,Regional moment magnitude,"Moment magnitude from inversion of complete waveforms at regional distances; common for moderate events in well-instrumented regions",~4.0 and larger,0–2000 km
+mw,Moment magnitude,"Generic moment magnitude, based on seismic moment (rupture area × slip × rigidity); used when the specific method isn't labeled",Any (best for larger events),Any
+ms / ms_20,Surface-wave magnitude,"Based on the amplitude of Rayleigh surface waves with ~20-second periods",~5.0–8.0,20–160 degrees
+mb,Short-period body-wave magnitude,"Based on the amplitude of the first few cycles of the P wave (period ~1 s); saturates around 6.5",~4.0–6.5,15–100 degrees
+mb_lg,Lg-wave magnitude,"Short-period magnitude based on the Lg surface wave; used mainly in central and eastern North America (also seen as MLg)",~3.5–7.0,150–1110 km
+ml,Local (Richter) magnitude,"Original Richter scale: maximum amplitude on a horizontal seismograph, calibrated per region; the most common type for small local quakes",~2.0–6.5,0–600 km
+md,Duration magnitude,"Based on the duration of shaking (coda length) at a station; common for small events in volcanic and California networks",~4 or smaller,0–400 km
+mi / mwp,Integrated P-wave magnitude,"Moment magnitude estimated quickly from integrating the P waveform; used for rapid tsunami warning",~5.0–8.0,0–2000 km
+me,Energy magnitude,"Based on the radiated seismic energy rather than the moment; reflects how much shaking potential a quake has",~3.5 and larger,0–2000 km
+mh,Hand/non-standard magnitude,"Magnitude assigned manually or by a non-standard method, often for historical or special-case events",Varies,Varies
+mfa,Felt-area magnitude,"Estimated from the size of the area where shaking was felt; used for historical events without instrumental data",Varies,N/A
+mint,Intensity magnitude,"Estimated from observed shaking intensity reports; used mostly for historical events",Varies,N/A

@@ -1,0 +1,66 @@
+models:
+  - name: stg_earthquakes
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "date_update between '{{ var('start_date') }}' and '{{ var('end_date') }}'"
+    columns:
+      - name: id
+        description: "pk"
+        data_tests: [unique, not_null]
+      - name: magnitude_type
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_magtype')
+                field: magtype
+              config:
+                severity: error
+                warn_if: '>0'
+                error_if: '>20'
+      - name: country_iso3
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_natural_earth_countries')
+                field: country_iso3
+      - name: id_plate
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_plates')
+                field: id
+      - name: id_boundary
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_boundaries')
+                field: id
+  - name: stg_natural_earth_countries
+    columns:
+      - name: country_iso3
+        description: "pk"
+        data_tests: [unique, not_null]
+      - name: country_name
+        data_tests: [not_null]
+  - name: stg_magtype
+    columns:
+      - name: magtype
+        description: "pk"
+        data_tests: [unique, not_null]
+      - name: name
+        data_tests: [not_null]
+  - name: stg_boundaries
+    columns:
+      - name: id
+        description: "pk"
+        data_tests: [unique, not_null]
+      - name: name
+        data_tests: [not_null]
+  - name: stg_plates
+    columns:
+      - name: id
+        description: "pk"
+        data_tests: [unique, not_null]
+      - name: name
+        data_tests: [not_null]
