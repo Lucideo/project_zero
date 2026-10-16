@@ -6,7 +6,7 @@ services:
       LOAD_MODE: ${LOAD_MODE:-incremental}
       DESTINATION_BUCKET: ${DESTINATION_BUCKET:-/docker_app/raw_data}
     volumes:
-      - ./data/raw_data:/docker_app/raw_data
+      - raw_data:/docker_app/raw_data
   transformation:
     image: project_zero/transformation:dev
     build: ./transformation
@@ -18,11 +18,16 @@ services:
       DBT_TARGET_PATH: ${DBT_TARGET_PATH:-/docker_app/data/dbt_data_dump/target}
       STATIC_DATA_PATH: ${STATIC_DATA_PATH:-/docker_app/data/static_data}
     volumes:
-      # - ./data/raw_data:/docker_app/data/raw_data
-      # - ./data/processed_data:/docker_app/data/processed_data
-      # - ./data/dbt_data_dump:/docker_app/data/dbt_data_dump
-      # - ./data/static_data:/docker_app/data/static_data
-      - ./data:/docker_app/data
+      - raw_data:/docker_app/data/raw_data
+      - processed_data:/docker_app/data/processed_data
+      - ./data/dbt_data_dump:/docker_app/data/dbt_data_dump
+      - ./data/static_data:/docker_app/data/static_data
     depends_on:
           ingestion:
             condition: service_completed_successfully
+
+volumes:
+  raw_data:
+    name: raw_data
+  processed_data:
+    name: processed_data
