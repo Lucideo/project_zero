@@ -1,5 +1,6 @@
 services:
   ingestion:
+    profiles: [ingestion]
     image: project_zero/ingestion:dev
     build: ./ingestion
     environment:
@@ -8,6 +9,7 @@ services:
     volumes:
       - raw_data:/docker_app/raw_data
   transformation:
+    profiles: [transformation]
     image: project_zero/transformation:dev
     build: ./transformation
     environment:
