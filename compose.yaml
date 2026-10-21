@@ -22,9 +22,6 @@ services:
       - processed_data:/docker_app/data/processed_data
       - ./data/dbt_data_dump:/docker_app/data/dbt_data_dump
       - ./data/static_data:/docker_app/data/static_data
-    depends_on:
-          ingestion:
-            condition: service_completed_successfully
 
 volumes:
   raw_data:
