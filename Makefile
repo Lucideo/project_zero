@@ -1,19 +1,14 @@
--include .env
-export
-
 COMPOSE := docker compose
-BUILD ?= 
+BUILD ?=
 
 build_ingestion:
-	$(COMPOSE) --profile ingestion build $(BUILD)
+	$(COMPOSE) --profile ingestion build
 
 build_transformation:
-	$(COMPOSE) --profile transformation build $(BUILD)
+	$(COMPOSE) --profile transformation build
 
 run_ingestion:
-	$(COMPOSE) --profile ingestion up -d $(BUILD)
-	$(COMPOSE) --profile ingestion logs
+	$(COMPOSE) run --rm $(BUILD) ingestion
 
 run_transformation:
-	$(COMPOSE) --profile transformation up -d $(BUILD)
-	$(COMPOSE) --profile transformation logs
+	$(COMPOSE) run --rm $(BUILD) transformation
