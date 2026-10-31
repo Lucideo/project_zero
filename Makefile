@@ -16,6 +16,7 @@ run_transformation:
 
 ### seaweed and polaris ###
 -include .env
+export
 
 # set up seaweed
 AWS_CLI_ADMIN := docker run --rm --network project-zero \
@@ -82,3 +83,16 @@ polaris_set_dbt_credentials:
 		-d '{"grant": {"type": "catalog", "privilege": "CATALOG_MANAGE_CONTENT"}}'
 	@$(POLARIS_API) -X PUT $(MGMT)/principal-roles/$(POLARIS_PRINCIPAL_ROLE)/catalog-roles/$(POLARIS_CATALOG) \
 		-d '{"catalogRole": {"name": "$(POLARIS_CATALOG_ROLE)"}}'
+
+# smoke_test
+run_smoke_test_s3:
+	python3 -m venv smoke_test/.venv
+	smoke_test/.venv/bin/pip install -r smoke_test/requirements.txt
+	smoke_test/.venv/bin/python3 smoke_test/bronze.py
+run_smoke_test_polaris:
+	python3 -m venv smoke_test/.venv
+	smoke_test/.venv/bin/pip install -r smoke_test/requirements.txt
+	smoke_test/.venv/bin/python3 smoke_test/silver.py
+
+d_analysis::
+	smoke_test/.venv/bin/python3 scripts/analysis.py
