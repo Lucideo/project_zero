@@ -43,9 +43,9 @@
         { "accessKey": "duckdb_access", "secretKey": "duckdb_secret_change_me" }
       ],
       "actions": [
-        "Read:bronze",
-        "Read:silver",
-        "Read:gold"
+        "Read:bronze", "Write:bronze", "List:bronze",
+        "Read:silver", "Write:silver", "List:silver", "Tagging:silver",
+        "Read:gold", "Write:gold", "List:gold", "Tagging:gold"
       ]
     }
   ]
