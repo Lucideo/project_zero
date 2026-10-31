@@ -1,0 +1,52 @@
+{
+  "identities": [
+    {
+      "name": "lab_admin",
+      "credentials": [
+        { "accessKey": "lab-admin", "secretKey": "lab-admin-secret-change-me" }
+      ],
+      "actions": ["Admin", "Read", "List", "Tagging", "Write"]
+    },
+    {
+      "name": "dlt",
+      "credentials": [
+        { "accessKey": "dlt_access", "secretKey": "dlt_secret_change_me" }
+      ],
+      "actions": [
+        "Read:bronze", "Write:bronze", "List:bronze"
+      ]
+    },
+    {
+      "name": "polaris",
+      "credentials": [
+        { "accessKey": "polaris_access", "secretKey": "polaris_secret_change_me" }
+      ],
+      "actions": [
+        "Read:silver", "Write:silver", "List:silver", "Tagging:silver",
+        "Read:gold", "Write:gold", "List:gold", "Tagging:gold"
+      ]
+    },
+    {
+      "name": "dbt",
+      "credentials": [
+        { "accessKey": "dbt_access", "secretKey": "dbt_secret_change_me" }
+      ],
+      "actions": [
+        "Read:bronze",
+        "Read:silver", "Write:silver", "List:silver", "Tagging:silver",
+        "Read:gold", "Write:gold", "List:gold", "Tagging:gold"
+      ]
+    },
+    {
+      "name": "duckdb",
+      "credentials": [
+        { "accessKey": "duckdb_access", "secretKey": "duckdb_secret_change_me" }
+      ],
+      "actions": [
+        "Read:bronze",
+        "Read:silver",
+        "Read:gold"
+      ]
+    }
+  ]
+}
