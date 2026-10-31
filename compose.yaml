@@ -1,3 +1,6 @@
+include:
+  - infra_seaweed_polaris/compose_seaweed_polaris.yaml
+  
 services:
   ingestion:
     profiles: [ingestion]
