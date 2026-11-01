@@ -1,6 +1,7 @@
 import dlt
 from dlt.sources.rest_api import rest_api_source
 from dlt.destinations import filesystem
+from dlt.common.configuration.specs import AwsCredentials
 from datetime import datetime, timezone
 import os
 
@@ -48,7 +49,14 @@ def main():
 
     pipeline = dlt.pipeline(
         pipeline_name = "earthquakes",
-        destination = filesystem(bucket_url=destination_bucket),
+        destination = filesystem(
+            bucket_url=destination_bucket,
+            credentials=AwsCredentials(
+                aws_access_key_id=os.getenv("DLT_S3_ACCESS_KEY"),
+                aws_secret_access_key=os.getenv("DLT_S3_SECRET_KEY"),
+                endpoint_url=os.getenv("S3_ENDPOINT")
+            )
+        ),
         dataset_name = "usgs_earthquakes"
     )
 
