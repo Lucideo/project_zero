@@ -20,7 +20,7 @@ export
 
 # set up seaweed
 AWS_CLI_ADMIN := docker run --rm --network project-zero \
-	-e AWS_ACCESS_KEY_ID=$(ADMIN_KEY) -e AWS_SECRET_ACCESS_KEY=$(ADMIN_SECRET) \
+	-e AWS_ACCESS_KEY_ID=$(S3_ADMIN_KEY) -e AWS_SECRET_ACCESS_KEY=$(S3_ADMIN_SECRET) \
 	-e AWS_DEFAULT_REGION=us-east-1 \
 	amazon/aws-cli \
 	--endpoint-url http://s3:8333
