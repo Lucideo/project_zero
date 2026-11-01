@@ -5,12 +5,14 @@ services:
   ingestion:
     profiles: [ingestion]
     image: project_zero/ingestion:dev
+    networks: [project-zero]
     build: ./ingestion
     environment:
       LOAD_MODE: ${LOAD_MODE:-incremental}
       DESTINATION_BUCKET: ${DESTINATION_BUCKET}
-    volumes:
-      - raw_data:/docker_app/raw_data
+      S3_ENDPOINT: ${S3_ENDPOINT_URL_CONTAINER}
+      DLT_S3_ACCESS_KEY: ${DLT_S3_ACCESS_KEY}
+      DLT_S3_SECRET_KEY: ${DLT_S3_SECRET_KEY}
   transformation:
     profiles: [transformation]
     image: project_zero/transformation:dev
@@ -23,13 +25,10 @@ services:
       DBT_TARGET_PATH: ${DBT_TARGET_PATH}
       STATIC_DATA_PATH: ${STATIC_DATA_PATH}
     volumes:
-      - raw_data:${SOURCE_DATA_DIR}
       - processed_data:${DESTINATION_PATH}
       - ./data/dbt_data_dump:${DBT_DUMP_PATH}
       - ./data/static_data:${STATIC_DATA_PATH}
 
 volumes:
-  raw_data:
-    name: raw_data
   processed_data:
     name: processed_data
