@@ -50,22 +50,21 @@ polaris_health:
 	@curl -s http://localhost:8182/q/health | jq .status
 
 # create and list polaris catalog
-TOKEN := $(shell curl -s $(POLARIS_ENDPOINT_URL)/api/catalog/v1/oauth/tokens \
+TOKEN := $(shell curl -s $(POLARIS_ENDPOINT_URL_HOST)/api/catalog/v1/oauth/tokens \
   -H "Polaris-Realm: $(POLARIS_REALM)" \
   -d grant_type=client_credentials -d client_id=${POLARIS_ROOT} -d client_secret=${POLARIS_ROOT_SECRET} \
   -d scope=PRINCIPAL_ROLE:ALL | jq -r .access_token)
 
 polaris_create_catalog:
-	@curl -X POST $(POLARIS_ENDPOINT_URL)/api/management/v1/catalogs \
+	@curl -X POST $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/catalogs \
 	-H "Authorization: Bearer $(TOKEN)" -H "Polaris-Realm: $(POLARIS_REALM)" \
 	-H "Content-Type: application/json" -d @infra_seaweed_polaris/catalog.json
 
 polaris_list_catalog:
-	@curl -s $(POLARIS_ENDPOINT_URL)/api/management/v1/catalogs -H "Authorization: Bearer $(TOKEN)" -H "Polaris-Realm: $(POLARIS_REALM)"
+	@curl -s $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/catalogs -H "Authorization: Bearer $(TOKEN)" -H "Polaris-Realm: $(POLARIS_REALM)"
 
 # set polaris credentials for dbt
-MGMT := $(POLARIS_ENDPOINT_URL)/api/management/v1
-
+MGMT := $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1
 POLARIS_API := curl -sS --fail-with-body \
 	-H "Authorization: Bearer $(TOKEN)" -H "Polaris-Realm: $(POLARIS_REALM)" \
 	-H "Content-Type: application/json"
