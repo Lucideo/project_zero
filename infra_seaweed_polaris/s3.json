@@ -27,17 +27,6 @@
       ]
     },
     {
-      "name": "dbt",
-      "credentials": [
-        { "accessKey": "dbt_access", "secretKey": "dbt_secret_change_me" }
-      ],
-      "actions": [
-        "Read:bronze",
-        "Read:silver", "Write:silver", "List:silver", "Tagging:silver",
-        "Read:gold", "Write:gold", "List:gold", "Tagging:gold"
-      ]
-    },
-    {
       "name": "duckdb",
       "credentials": [
         { "accessKey": "duckdb_access", "secretKey": "duckdb_secret_change_me" }
