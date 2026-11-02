@@ -43,9 +43,9 @@ def main():
         ]
     })
 
-    destination_bucket = os.getenv("DESTINATION_BUCKET")
+    destination_bucket = os.getenv("BRONZE_BUCKET")
     if not destination_bucket:
-        raise RuntimeError("DESTINATION_BUCKET environment variable is not set")
+        raise RuntimeError("BRONZE_BUCKET environment variable is not set")
 
     pipeline = dlt.pipeline(
         pipeline_name = "earthquakes",
@@ -54,7 +54,7 @@ def main():
             credentials=AwsCredentials(
                 aws_access_key_id=os.getenv("DLT_S3_ACCESS_KEY"),
                 aws_secret_access_key=os.getenv("DLT_S3_SECRET_KEY"),
-                endpoint_url=os.getenv("S3_ENDPOINT")
+                endpoint_url=os.getenv("S3_ENDPOINT_URL")
             )
         ),
         dataset_name = "usgs_earthquakes"
