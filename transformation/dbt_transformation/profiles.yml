@@ -7,6 +7,14 @@ project_zero_dbt_transformation:
       extensions:
         - spatial
         - httpfs
+      secrets: &seaweedfs_secrets
+        - type: s3
+          key_id: "{{ env_var('DUCKDB_S3_ACCESS_KEY') }}"
+          secret: "{{ env_var('DUCKDB_S3_SECRET_KEY') }}"
+          endpoint: "{{ env_var('S3_ENDPOINT') }}"
+          region: "{{ env_var('AWS_REGION') }}"
+          url_style: path
+          use_ssl: false
 
     prod:
       type: duckdb
@@ -15,5 +23,6 @@ project_zero_dbt_transformation:
       extensions:
         - spatial
         - httpfs
+      secrets: *seaweedfs_secrets
 
   target: "{{ env_var('TARGET_ENV', 'dev') }}"
