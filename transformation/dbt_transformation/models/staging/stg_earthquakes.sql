@@ -24,8 +24,17 @@ quakes_geo_coord as (
     group by all
 ),
 
+-- Geometry types are not supported in Iceberg v2, so they stored as BLOBs.
 countries as (
-    select * from {{ ref('stg_natural_earth_countries') }}
+    select *, ST_GeomFromWKB(geom_wkb) as geom from {{ ref('stg_natural_earth_countries') }}
+),
+
+plates_geom as (
+    select *, ST_GeomFromWKB(geom_wkb) as geom from {{ ref('stg_plates') }}
+),
+
+boundaries_geom as (
+    select *, ST_GeomFromWKB(geom_wkb) as geom from {{ ref('stg_boundaries') }}
 ),
 
 -- When epicenter is inside a country.
@@ -64,7 +73,7 @@ plates as (
         q.id, 
         p.id as id_plate,
     from quakes_geo_coord q
-    join {{ ref('stg_plates') }} p on ST_Contains(p.geom, q.geo_point)
+    join plates_geom p on ST_Contains(p.geom, q.geo_point)
 ),
 
 -- Epicenter's boundary.
@@ -74,7 +83,7 @@ boundaries as (
         b.id as id_boundary,
         ST_Distance(b.geom, q.geo_point) as distance_degrees
     from quakes_geo_coord q 
-    cross join {{ ref('stg_boundaries') }} b
+    cross join boundaries_geom b
     qualify row_number() over (partition by q.id order by distance_degrees) = 1
 )
 

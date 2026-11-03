@@ -8,5 +8,5 @@ select
     continent as continent,
     region_un as un_region,
     subregion as subregion,
-    geom
+    ST_AsWKB(geom)::BLOB as geom_wkb -- Iceberg v2 has no geometry type.
 from st_read({{ source('countries', 'natural_earth_countries') }})

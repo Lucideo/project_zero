@@ -21,6 +21,9 @@ snapshot-paths: ["snapshots"]
   # - "target"
   # - "dbt_packages"
 
+on-run-start:
+  - "{{ drop_incrementals_on_full_refresh() }}"
+
 vars:
   start_date: "2020-01-01"
   end_date: "2030-12-31"
@@ -35,6 +38,10 @@ models:
   dbt_transformation:
     # Config indicated by + and applies to all files under models/example/
     staging:
-      +materialized: table
+      +materialized: iceberg_table
+      +database: usgs_catalog
+      +schema: usgs_silver
     warehouse:
-      +materialized: table
+      +materialized: iceberg_table
+      +database: usgs_catalog
+      +schema: usgs_gold
