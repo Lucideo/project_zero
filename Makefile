@@ -41,11 +41,12 @@ run_smoke_test_polaris:
 	smoke_test/.venv/bin/python3 smoke_test/silver.py
 run_ingestion_local_test:
 	cd ingestion && \
-	BRONZE_BUCKET=s3://bronze DLT_S3_ACCESS_KEY=dlt_access DLT_S3_SECRET_KEY=dlt_secret_change_me S3_ENDPOINT_URL=http://localhost:8333 \
+	BRONZE_BUCKET=${BRONZE_BUCKET} DLT_S3_ACCESS_KEY=${DLT_S3_ACCESS_KEY} DLT_S3_SECRET_KEY=${DLT_S3_SECRET_KEY} S3_ENDPOINT_URL=${S3_ENDPOINT_URL_HOST} \
 	uv run src/ingestion/main.py
 run_transformation_local_test:
 	cd transformation/dbt_transformation && \
-	STATIC_DATA_PATH=~/Documents/project_zero/data/static_data/ DESTINATION_PATH=. DBT_DUMP_PATH=data/dbt_data_dump DBT_LOG_PATH=data/dbt_data_dump/logs DBT_TARGET_PATH=data/dbt_data_dump/target S3_ENDPOINT=localhost:8333 \
+	STATIC_DATA_PATH=~/Documents/project_zero/data/static_data/ DUCKDB_FILE_PATH=. DBT_DUMP_PATH=data/dbt_data_dump DBT_LOG_PATH=data/dbt_data_dump/logs DBT_TARGET_PATH=data/dbt_data_dump/target S3_ENDPOINT=${S3_ENDPOINT_HOST} \
+	POLARIS_PRINCIPAL_CLIENT_ID=${POLARIS_PRINCIPAL_CLIENT_ID} POLARIS_PRINCIPAL_CLIENT_SECRET=${POLARIS_PRINCIPAL_CLIENT_SECRET} POLARIS_ENDPOINT_URL=${POLARIS_ENDPOINT_URL_HOST} POLARIS_CATALOG=${POLARIS_CATALOG} \
 	uv run dbt build
 
 ###
@@ -93,20 +94,19 @@ polaris_list_catalog:
 	@curl -s $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/catalogs -H "Authorization: Bearer $(TOKEN)" -H "Polaris-Realm: $(POLARIS_REALM)"
 
 # set polaris credentials for dbt
-MGMT := $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1
 POLARIS_API := curl -sS --fail-with-body \
 	-H "Authorization: Bearer $(TOKEN)" -H "Polaris-Realm: $(POLARIS_REALM)" \
 	-H "Content-Type: application/json"
 polaris_set_dbt_credentials:
-	@$(POLARIS_API) -X POST $(MGMT)/principals \
+	@$(POLARIS_API) -X POST $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/principals \
 		-d '{"principal": {"name": "$(POLARIS_PRINCIPAL)"}}' | jq .credentials
-	@$(POLARIS_API) -X POST $(MGMT)/principal-roles \
+	@$(POLARIS_API) -X POST $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/principal-roles \
 		-d '{"principalRole": {"name": "$(POLARIS_PRINCIPAL_ROLE)"}}'
-	@$(POLARIS_API) -X PUT $(MGMT)/principals/$(POLARIS_PRINCIPAL)/principal-roles \
+	@$(POLARIS_API) -X PUT $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/principals/$(POLARIS_PRINCIPAL)/principal-roles \
 		-d '{"principalRole": {"name": "$(POLARIS_PRINCIPAL_ROLE)"}}'
-	@$(POLARIS_API) -X POST $(MGMT)/catalogs/$(POLARIS_CATALOG)/catalog-roles \
+	@$(POLARIS_API) -X POST $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/catalogs/$(POLARIS_CATALOG)/catalog-roles \
 		-d '{"catalogRole": {"name": "$(POLARIS_CATALOG_ROLE)"}}'
-	@$(POLARIS_API) -X PUT $(MGMT)/catalogs/$(POLARIS_CATALOG)/catalog-roles/$(POLARIS_CATALOG_ROLE)/grants \
+	@$(POLARIS_API) -X PUT $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/catalogs/$(POLARIS_CATALOG)/catalog-roles/$(POLARIS_CATALOG_ROLE)/grants \
 		-d '{"grant": {"type": "catalog", "privilege": "CATALOG_MANAGE_CONTENT"}}'
-	@$(POLARIS_API) -X PUT $(MGMT)/principal-roles/$(POLARIS_PRINCIPAL_ROLE)/catalog-roles/$(POLARIS_CATALOG) \
+	@$(POLARIS_API) -X PUT $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/principal-roles/$(POLARIS_PRINCIPAL_ROLE)/catalog-roles/$(POLARIS_CATALOG) \
 		-d '{"catalogRole": {"name": "$(POLARIS_CATALOG_ROLE)"}}'
