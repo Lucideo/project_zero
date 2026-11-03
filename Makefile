@@ -1,3 +1,6 @@
+-include .env
+export
+
 ###
 # ingestion and transformation apps
 ###
@@ -23,10 +26,7 @@ lakehouse_setup:
 	$(MAKE) polaris_up
 	$(MAKE) polaris_create_catalog
 	$(MAKE) polaris_set_dbt_credentials
-lakehouse_run:
-	$(MAKE) run_ingestion
-	$(MAKE) run_transformation
-lakehouse: lakehouse_setup lakehouse_run
+	${MAKE} polaris_setup_namespaces
 
 ###
 # run tests
@@ -52,8 +52,6 @@ run_transformation_local_test:
 ###
 # seaweed and polaris
 ###
--include .env
-export
 
 # set up seaweed
 AWS_CLI_ADMIN := docker run --rm --network project-zero \
@@ -110,3 +108,10 @@ polaris_set_dbt_credentials:
 		-d '{"grant": {"type": "catalog", "privilege": "CATALOG_MANAGE_CONTENT"}}'
 	@$(POLARIS_API) -X PUT $(POLARIS_ENDPOINT_URL_HOST)/api/management/v1/principal-roles/$(POLARIS_PRINCIPAL_ROLE)/catalog-roles/$(POLARIS_CATALOG) \
 		-d '{"catalogRole": {"name": "$(POLARIS_CATALOG_ROLE)"}}'
+
+# create schemas/namespaces in polaris catalog
+polaris_setup_namespaces:
+	@$(POLARIS_API) -X POST $(POLARIS_ENDPOINT_URL_HOST)/api/catalog/v1/$(POLARIS_CATALOG)/namespaces \
+		-d '{"namespace": ["${POLARIS_NAMESPACE_SILVER}"], "properties": {"location": "s3://silver/${POLARIS_NAMESPACE_SILVER}/"}}'
+	@$(POLARIS_API) -X POST $(POLARIS_ENDPOINT_URL_HOST)/api/catalog/v1/$(POLARIS_CATALOG)/namespaces \
+		-d '{"namespace": ["${POLARIS_NAMESPACE_GOLD}"], "properties": {"location": "s3://gold/${POLARIS_NAMESPACE_GOLD}/"}}'

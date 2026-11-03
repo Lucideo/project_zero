@@ -11,7 +11,7 @@ select
     b.PlateB as plate_b,
     plate_b.name as name_plate_b,
     b.Type as type,
-    b.geom
+    ST_AsWKB(b.geom)::BLOB as geom_wkb -- Iceberg v2 has no geometry type.
 from {{ source('tectonic_plates', 'boundaries') }} b
 left join plate_name plate_a on plate_a.code_plate = b.PlateA
 left join plate_name plate_b on plate_b.code_plate = b.PlateB
