@@ -3,12 +3,12 @@
 		"name": "usgs",
 		"type": "INTERNAL",
 		"properties": {
-			"default-base-location": "s3://silver/usgs",
+			"default-base-location": "s3://default",
 			"polaris.config.drop-with-purge.enabled": "true"
 		},
 		"storageConfigInfo": {
 			"storageType": "S3",
-			"allowedLocations": ["s3://silver/usgs", "s3://gold/usgs"],
+			"allowedLocations": ["s3://default", "s3://silver", "s3://gold"],
 			"region": "us-east-1",
 			"endpoint": "http://localhost:8333",
 			"endpointInternal": "http://s3:8333",
