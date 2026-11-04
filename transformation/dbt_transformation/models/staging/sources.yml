@@ -2,7 +2,7 @@ sources:
   - name: earthquakes
     meta:
       source_name: "usgs_earthquakes"
-      external_location: "{{ env_var('BRONZE_BUCKET') }}/{source_name}/{name}/*.parquet"
+      external_location: "{{ env_var('BRONZE_BUCKET_URL') }}/{source_name}/{name}/*.parquet"
     tables:
       - name: earthquakes
       - name: earthquakes__geometry__coordinates

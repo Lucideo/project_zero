@@ -43,9 +43,9 @@ def main():
         ]
     })
 
-    destination_bucket = os.getenv("BRONZE_BUCKET")
+    destination_bucket = os.getenv("BRONZE_BUCKET_URL")
     if not destination_bucket:
-        raise RuntimeError("BRONZE_BUCKET environment variable is not set")
+        raise RuntimeError("BRONZE_BUCKET_URL environment variable is not set")
 
     pipeline = dlt.pipeline(
         pipeline_name = "earthquakes",
