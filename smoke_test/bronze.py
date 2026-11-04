@@ -5,6 +5,7 @@ conn = duckdb.connect()
 
 conn.sql("INSTALL httpfs; LOAD httpfs;")
 
+print('Creating s3 secret..')
 conn.sql(f"""
 CREATE SECRET (TYPE s3, KEY_ID '{os.environ["DUCKDB_S3_ACCESS_KEY"]}', SECRET '{os.environ["DUCKDB_S3_SECRET_KEY"]}',
     ENDPOINT '{os.environ["S3_ENDPOINT_HOST"]}', URL_STYLE 'path', USE_SSL false, REGION '{os.environ["AWS_REGION"]}')
@@ -12,7 +13,8 @@ CREATE SECRET (TYPE s3, KEY_ID '{os.environ["DUCKDB_S3_ACCESS_KEY"]}', SECRET '{
 
 usgs_endpoint = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.csv'
 
-raw_parquet_path = 's3://bronze/raw_data.parquet'
+
+raw_parquet_path = f'{os.environ["BRONZE_BUCKET_URL"]}/raw_data.parquet'
 
 print('Inserting raw parquet on bronze bucket..')
 conn.sql(f"COPY (SELECT * FROM read_csv('{usgs_endpoint}')) TO '{raw_parquet_path}' (FORMAT parquet)")
