@@ -70,6 +70,8 @@ delete_bucket:
 	$(AWS_CLI_ADMIN) s3 rb s3://bronze --force && $(AWS_CLI_ADMIN) s3 rb s3://silver --force && $(AWS_CLI_ADMIN) s3 rb s3://gold --force
 s3_ls:
 	$(AWS_CLI_ADMIN) s3 ls ${LS_PATH} --recursive
+s3_rm:
+	$(AWS_CLI_ADMIN) s3 rm ${RM_PATH} --recursive
 
 # set up polaris
 polaris_db_up:
