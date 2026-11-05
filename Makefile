@@ -43,7 +43,7 @@ run_ingestion_local_test:
 	cd ingestion && \
 	BRONZE_BUCKET_URL=${BRONZE_BUCKET_URL} DLT_S3_ACCESS_KEY=${DLT_S3_ACCESS_KEY} DLT_S3_SECRET_KEY=${DLT_S3_SECRET_KEY} S3_ENDPOINT_URL=${S3_ENDPOINT_URL_HOST} \
 	uv run src/ingestion/main.py
-VAR_LOCAL_TEST := STATIC_DATA_PATH=~/Documents/project_zero/data/static_data/ DUCKDB_FILE_PATH=. DBT_DUMP_PATH=data/dbt_data_dump DBT_LOG_PATH=data/dbt_data_dump/logs DBT_TARGET_PATH=data/dbt_data_dump/target S3_ENDPOINT=${S3_ENDPOINT_HOST} \
+VAR_LOCAL_TEST := STATIC_DATA_PATH=${CURDIR}/data/static_data/ DUCKDB_FILE_PATH=. DBT_DUMP_PATH=data/dbt_data_dump DBT_LOG_PATH=data/dbt_data_dump/logs DBT_TARGET_PATH=data/dbt_data_dump/target S3_ENDPOINT=${S3_ENDPOINT_HOST} \
 	POLARIS_PRINCIPAL_CLIENT_ID=${POLARIS_PRINCIPAL_CLIENT_ID} POLARIS_PRINCIPAL_CLIENT_SECRET=${POLARIS_PRINCIPAL_CLIENT_SECRET} POLARIS_ENDPOINT_URL=${POLARIS_ENDPOINT_URL_HOST} POLARIS_CATALOG=${POLARIS_CATALOG}
 run_transformation_local_test:
 	cd transformation/dbt_transformation && \
