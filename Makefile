@@ -29,6 +29,12 @@ lakehouse_setup:
 	${MAKE} polaris_setup_namespaces
 
 ###
+# wipe lakehouse and applications
+###
+wipe_environment:
+	$(COMPOSE) --profile seaweed --profile polaris --profile polaris_db down -v
+
+###
 # run tests
 ###
 run_smoke_test_s3:
