@@ -40,3 +40,5 @@ conn.sql(f"DROP TABLE IF EXISTS lakehouse.{namespace}.earthquakes")
 conn.sql(f"CREATE TABLE lakehouse.{namespace}.earthquakes AS SELECT * FROM read_parquet('{raw_parquet_path}')")
 print('Querying created table..')
 conn.sql(f"SELECT * FROM lakehouse.{namespace}.earthquakes limit 5").show()
+
+conn.sql(f'DROP TABLE lakehouse.{namespace}.earthquakes')
