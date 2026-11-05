@@ -39,6 +39,11 @@ run_smoke_test_polaris:
 	python3 -m venv smoke_test/.venv
 	smoke_test/.venv/bin/pip install -r smoke_test/requirements.txt
 	smoke_test/.venv/bin/python3 smoke_test/silver.py
+run_smoke_test_duckdb_gold:
+	python3 -m venv smoke_test/.venv
+	smoke_test/.venv/bin/pip install -r smoke_test/requirements.txt
+	smoke_test/.venv/bin/python3 smoke_test/duckdb_gold.py
+
 run_ingestion_local_test:
 	cd ingestion && \
 	BRONZE_BUCKET_URL=${BRONZE_BUCKET_URL} DLT_S3_ACCESS_KEY=${DLT_S3_ACCESS_KEY} DLT_S3_SECRET_KEY=${DLT_S3_SECRET_KEY} S3_ENDPOINT_URL=${S3_ENDPOINT_URL_HOST} \
