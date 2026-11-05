@@ -24,7 +24,7 @@ CREATE SECRET polaris (TYPE iceberg, CLIENT_ID '{os.environ["POLARIS_PRINCIPAL_C
 catalog_name = os.environ['POLARIS_CATALOG']
 print(f'Attaching {catalog_name} catalog..')
 conn.sql(f"""
-    ATTACH {catalog_name} AS silver (TYPE iceberg, ENDPOINT '{os.environ["POLARIS_ENDPOINT_URL_HOST"]}/api/catalog',
+    ATTACH {catalog_name} AS lakehouse (TYPE iceberg, ENDPOINT '{os.environ["POLARIS_ENDPOINT_URL_HOST"]}/api/catalog',
         SECRET polaris, ACCESS_DELEGATION_MODE 'none')
 """)
 
@@ -34,9 +34,9 @@ namespace = os.environ['POLARIS_NAMESPACE_SILVER']
 raw_parquet_path = f'{source_bucket_url}/raw_data.parquet'
 
 print('Creating schema..')
-conn.sql(f"CREATE SCHEMA IF NOT EXISTS silver.{namespace}") # create schema/namespace
+conn.sql(f"CREATE SCHEMA IF NOT EXISTS lakehouse.{namespace}") # create schema/namespace
 print('Creating table..')
-conn.sql(f"DROP TABLE IF EXISTS silver.{namespace}.earthquakes")
-conn.sql(f"CREATE TABLE silver.{namespace}.earthquakes AS SELECT * FROM read_parquet('{raw_parquet_path}')")
+conn.sql(f"DROP TABLE IF EXISTS lakehouse.{namespace}.earthquakes")
+conn.sql(f"CREATE TABLE lakehouse.{namespace}.earthquakes AS SELECT * FROM read_parquet('{raw_parquet_path}')")
 print('Querying created table..')
-conn.sql(f"SELECT * FROM silver.{namespace}.earthquakes limit 5").show()
+conn.sql(f"SELECT * FROM lakehouse.{namespace}.earthquakes limit 5").show()
