@@ -1,4 +1,4 @@
-# project_zero — USGS Earthquakes Lakehouse
+# USGS Earthquake Data pipeline + Lakehouse
 
 An end-to-end data pipeline that ingests earthquake events from the [USGS Earthquake API](https://earthquake.usgs.gov/fdsnws/event/1/), lands them as raw parquet and models them into an iceberg based star schema following the medallion architecture (bronze > silver > gold).
 
@@ -22,7 +22,7 @@ The project runs fully local on Docker, using open-source components that mirror
 | Layer  | Bucket          | Format          | Written by | Contents |
 | ------ | --------------- | --------------- | ---------- | -------- |
 | Bronze | `s3://bronze`   | Parquet         | dlt        | Raw USGS GeoJSON features (`usgs_earthquakes/earthquakes`, `earthquakes__geometry__coordinates`) |
-| Silver | `s3://silver`   | Iceberg (Polaris) | dbt      | Cleaned and typed staging models (`stg_*`) |
+| Silver | `s3://silver`   | Iceberg (Polaris) | dbt      | Cleaned and typed staging models (`stg_boundaries`, `stg_date`, `stg_earthquakes`, `stg_magtype`, `stg_natural_earth_countries`, `stg_plates`) |
 | Gold   | `s3://gold`     | Iceberg (Polaris) | dbt      | Dimensional model: `fact_earthquakes`, `dim_date`, `dim_location`, `dim_magnitude`, `dim_plate`, `dim_boundary` |
 
 Besides the API data, the transformation layer enriches events with static reference data in [data/static_data/](data/static_data/):
@@ -41,6 +41,26 @@ Besides the API data, the transformation layer enriches events with static refer
 - **Query engine**: DuckDB
 - **Packaging**: Docker / Docker Compose, Python managed with [uv](https://docs.astral.sh/uv/)
 - **Planned**: Airflow (orchestration), Terraform (cloud infra)
+
+---
+
+## Iceberg workarounds (dbt-duckdb + Polaris)
+
+- **No rename in the same transaction.** DuckDB's Iceberg extension can't rename a table in the same transaction that created it, and dbt-duckdb's default `table` materialization builds a `__dbt_tmp` table and then renames it. Models in `staging` and `warehouse` therefore use a custom `iceberg_table` materialization ([iceberg_table.sql](transformation/dbt_transformation/macros/materializations/iceberg_table.sql)). It drops the existing table and recreates it with `CREATE TABLE AS` instead of renaming, so a table is briefly missing while it's rebuilt.
+- **Full refresh of incremental models.** For the same reason, an `on-run-start` hook ([drop_incrementals_on_full_refresh.sql](transformation/dbt_transformation/macros/drop_incrementals_on_full_refresh.sql)) drops incremental models (e.g. `fact_earthquakes`) before a `--full-refresh`, so dbt creates them directly.
+- **No geometry type in Iceberg v2.** Polaris creates Iceberg v2 tables, and v2 has no geometry type. Silver models store shapes as WKB in a `geom_wkb` (`BLOB`) column. Use `ST_GeomFromWKB(geom_wkb)` to get the geometry back when querying or doing spatial joins. This also keeps the tables readable by Glue and Athena in the future cloud setup.
+- **Schema name prefix.** DuckDB prefixes every namespace with `main_` (e.g. `main_usgs_gold`). The [generate_schema_name](transformation/dbt_transformation/macros/generate_schema_name.sql) macro overrides this so models land in `usgs_silver` and `usgs_gold`.
+
+---
+
+## Roadmap
+
+- [ ] Orchestrate ingestion and transformation with **Airflow**
+- [ ] Cloud deployment with **Terraform**:
+  - Lambda (dlt) → S3 bronze
+  - Fargate / Lambda (dbt-duckdb) → S3 + Iceberg + Glue Catalog
+  - Athena as the query interface
+  - Step Functions + EventBridge Scheduler for orchestration
 
 ---
 
@@ -187,23 +207,3 @@ There are 3 buckets: `bronze`, `silver` and `gold`. Identities are defined in [i
 - Polaris runs with `stsUnavailable: true` and `access_delegation_mode: none`. Clients use their own S3 credentials instead of vended credentials, because SeaweedFS has no STS.
 
 > All credentials in `.env.example` and `s3.json` are local development defaults. Change them before exposing any service outside your machine.
-
----
-
-## Iceberg workarounds (dbt-duckdb + Polaris)
-
-- **No rename in the same transaction.** DuckDB's Iceberg extension can't rename a table in the same transaction that created it, and dbt-duckdb's default `table` materialization builds a `__dbt_tmp` table and then renames it. Models in `staging` and `warehouse` therefore use a custom `iceberg_table` materialization ([iceberg_table.sql](transformation/dbt_transformation/macros/materializations/iceberg_table.sql)). It drops the existing table and recreates it with `CREATE TABLE AS` instead of renaming, so a table is briefly missing while it's rebuilt.
-- **Full refresh of incremental models.** For the same reason, an `on-run-start` hook ([drop_incrementals_on_full_refresh.sql](transformation/dbt_transformation/macros/drop_incrementals_on_full_refresh.sql)) drops incremental models (e.g. `fact_earthquakes`) before a `--full-refresh`, so dbt creates them directly.
-- **No geometry type in Iceberg v2.** Polaris creates Iceberg v2 tables, and v2 has no geometry type. Silver models store shapes as WKB in a `geom_wkb` (`BLOB`) column. Use `ST_GeomFromWKB(geom_wkb)` to get the geometry back when querying or doing spatial joins. This also keeps the tables readable by Glue and Athena in the future cloud setup.
-- **Schema name prefix.** DuckDB prefixes every namespace with `main_` (e.g. `main_usgs_gold`). The [generate_schema_name](transformation/dbt_transformation/macros/generate_schema_name.sql) macro overrides this so models land in `usgs_silver` and `usgs_gold`.
-
----
-
-## Roadmap
-
-- [ ] Orchestrate ingestion and transformation with **Airflow**
-- [ ] Cloud deployment with **Terraform**:
-  - Lambda (dlt) → S3 bronze
-  - Fargate / Lambda (dbt-duckdb) → S3 + Iceberg + Glue Catalog
-  - Athena as the query interface
-  - Step Functions + EventBridge Scheduler for orchestration
